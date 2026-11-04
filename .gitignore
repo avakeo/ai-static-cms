@@ -5,3 +5,16 @@ __pycache__/
 .env
 data/
 output/
+.env.*
+!.env.example
+dist/
+build/
+*.egg-info/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.log
+.DS_Store
+.idea/
+.vscode/
