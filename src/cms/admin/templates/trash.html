@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_ui.html" import queue_state %}
+{% block content %}
+<div class="title-row">
+  <h1>ゴミ箱</h1>
+  <a class="button" href="{{ url_for('queue_list') }}">記事キューへ戻る</a>
+</div>
+<p class="help">削除した下書きの置き場です。ここから戻せます。</p>
+<div class="card table-scroll">
+  <table>
+    <thead><tr><th>元の状態</th><th>モード</th><th>タイトル</th><th>削除日時（JST）</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for it in items %}
+      <tr>
+        <td class="nowrap">{{ queue_state(it.state) }}<div class="muted small">#{{ it.id }}</div></td>
+        <td class="nowrap">{{ it.mode }}</td>
+        <td>{{ it.title or '（タイトルなし）' }}</td>
+        <td class="nowrap">{{ jst(it.trashed_at) }}</td>
+        <td class="actions">
+          <form method="post" action="{{ url_for('queue_trash_restore', item_id=it.id) }}">
+            <button class="button button--small" type="submit">戻す</button>
+          </form>
+          <form method="post" action="{{ url_for('queue_trash_purge', item_id=it.id) }}" data-confirm="完全に削除しますか？元に戻せません。">
+            <button class="button button--small button--danger" type="submit">完全に削除</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td class="empty" colspan="5">ゴミ箱は空です</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+# 用意したお題リストから作るモード
+site_title = "歴史こぼれ話（サンプル）"
+base_url = "https://history-trivia.example.com"
+type = "list"
+prompt_file = "prompts/history-trivia.txt"
+items_file = "items/history-trivia.txt"
+
+batch_count = 2
+schedule = "30 6 * * 1-5"
+generate_retry_until = "11:50"
+publish_schedule = "0 12,20 * * 1-5"
+publish_order = "random"
+thread_max_posts = 60

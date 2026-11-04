@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "_ui.html" import filter_link, queue_state, queue_state_name %}
+{% block content %}
+<div class="title-row">
+  <h1>記事キュー</h1>
+  <a class="button" href="{{ url_for('queue_trash') }}">ゴミ箱</a>
+</div>
+<p class="help">
+  生成した記事の置き場です。<strong>待機中</strong>は公開スケジュールで1件ずつ出ます。
+  <strong>予約済み</strong>は指定時刻に出ます。<strong>取り下げ</strong>はサイトから外した記事で、同じURLで再公開できます。
+</p>
+
+{% if summary %}
+<div class="card table-scroll">
+  <table>
+    <thead><tr><th>モード</th>{% for s in states %}<th class="num">{{ queue_state_name(s) }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for m, c in summary.items() %}
+      <tr>
+        <td><a href="{{ url_for('queue_list', mode=m) }}">{{ m }}</a></td>
+        {% for s in states %}<td class="num">{{ c.get(s, 0) }}</td>{% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="filters">
+  {{ filter_link(url_for('queue_list', mode=mode_filter or None), 'すべて', not state_filter) }}
+  {% for s in states %}
+  {{ filter_link(url_for('queue_list', mode=mode_filter or None, state=s), queue_state_name(s), state_filter == s) }}
+  {% endfor %}
+  {% if mode_filter %}<span class="muted">モード: {{ mode_filter }}</span>
+  <a href="{{ url_for('queue_list', state=state_filter or None) }}">解除</a>{% endif %}
+</div>
+
+<div class="card table-scroll">
+  <table>
+    <thead><tr><th>状態</th><th>モード</th><th>タイトル</th><th>公開予定（JST）</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for it in items %}
+      <tr>
+        <td class="nowrap">{{ queue_state(it.state) }}<div class="muted small">#{{ it.id }}</div></td>
+        <td class="nowrap">{{ it.mode }}</td>
+        <td>{{ it.title or '（タイトルなし）' }}
+          {% if it.origin_filename %}<div class="muted small">元: {{ it.origin_filename }}</div>{% endif %}
+        </td>
+        <td class="nowrap">
+          <form class="inline" method="post" action="{{ url_for('queue_schedule', item_id=it.id) }}">
+            <input type="datetime-local" name="publish_at" aria-label="公開予定（日本時間）"
+                   value="{{ jst(it.publish_at).replace(' ', 'T') }}">
+            <button class="button button--small" type="submit">設定</button>
+          </form>
+        </td>
+        <td class="actions">
+          <a class="button button--small" href="{{ url_for('queue_preview', item_id=it.id) }}" target="_blank" rel="noopener">プレビュー</a>
+          <form method="post" action="{{ url_for('queue_publish', item_id=it.id) }}" data-confirm="いますぐ公開しますか？">
+            <button class="button button--small button--primary" type="submit">公開</button>
+          </form>
+          <form method="post" action="{{ url_for('queue_delete', item_id=it.id) }}" data-confirm="ゴミ箱へ移しますか？">
+            <button class="button button--small button--danger" type="submit">削除</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td class="empty" colspan="5">キューに記事がありません</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

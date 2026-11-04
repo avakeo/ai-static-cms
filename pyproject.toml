@@ -1,0 +1,30 @@
+[project]
+name = "ai-static-cms"
+version = "0.1.0"
+description = "AI で記事を生成し、予約公開まで自動で行う静的サイト CMS"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.14.2",
+    "flask>=3.1.0",
+    "google-genai>=1.49.0",
+    "python-dotenv>=1.2.1",
+    "requests>=2.32.5",
+]
+
+[project.scripts]
+cms = "cms.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8.4.2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cms"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>スケジュール</h1>
+<p class="help">モードごとの生成と公開の時刻です。変更は <code>modes/*.toml</code> で行います。生成に失敗した日だけ、締め切りまで10分おきに作り直します。</p>
+<div class="card table-scroll">
+  <table>
+    <thead><tr><th>モード</th><th>取得方式</th><th>生成</th><th>再試行の締め切り</th><th>公開</th><th>サイト</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td class="nowrap"><strong>{{ r.name }}</strong><div class="muted small">{{ r.mode.site_title }}</div></td>
+        <td>{{ r.mode.type }}</td>
+        <td class="nowrap"><code>{{ r.mode.schedule }}</code><div class="muted small">{{ r.mode.batch_count }}本</div></td>
+        <td class="nowrap">{{ r.mode.generate_retry_until or '—' }}<div class="muted small">{{ r.retry|length }}行の cron</div></td>
+        <td class="nowrap">{% for line in r.publish %}<code>{{ line }}</code><br>{% endfor %}<div class="muted small">{{ r.mode.publish_order }}</div></td>
+        <td><a class="button button--small" href="{{ url_for('site_file', mode=r.name) }}" target="_blank" rel="noopener">開く</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

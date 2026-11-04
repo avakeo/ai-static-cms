@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_ui.html" import filter_link, log_status, log_status_name %}
+{% block content %}
+<h1>実行ログ</h1>
+<p class="help">生成と公開の結果です。失敗した理由と、どのアカウントで生成したかを確認できます。</p>
+<div class="filters">
+  {{ filter_link(url_for('post_logs', status=status_filter or None), '全モード', not mode_filter) }}
+  {% for m in modes %}{{ filter_link(url_for('post_logs', mode=m, status=status_filter or None), m, mode_filter == m) }}{% endfor %}
+</div>
+<div class="filters">
+  {{ filter_link(url_for('post_logs', mode=mode_filter or None), 'すべて', not status_filter) }}
+  {% for s in statuses %}{{ filter_link(url_for('post_logs', mode=mode_filter or None, status=s), log_status_name(s), status_filter == s) }}{% endfor %}
+</div>
+<div class="card table-scroll">
+  <table>
+    <thead><tr><th>日時（JST）</th><th>結果</th><th>モード</th><th>内容</th><th>アカウント</th><th class="num">トークン</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for r in logs %}
+      <tr>
+        <td class="nowrap">{{ jst(r.created_at) }}</td>
+        <td>{{ log_status(r.status) }}</td>
+        <td class="nowrap">{{ r.mode }}</td>
+        <td>{{ r.title or '—' }}{% if r.error %}<div class="log-error">{{ r.error }}</div>{% endif %}</td>
+        <td>{{ r.used_account or '—' }}</td>
+        <td class="num">{{ r.total_tokens or '—' }}</td>
+        <td class="actions">
+          {% if (r.mode, r.filename) in live %}
+          <a class="button button--small" href="{{ url_for('site_file', mode=r.mode, filename='threads/' ~ r.filename) }}" target="_blank" rel="noopener">表示</a>
+          <form method="post" action="{{ url_for('unpublish') }}" data-confirm="この記事を取り下げますか？">
+            <input type="hidden" name="mode" value="{{ r.mode }}">
+            <input type="hidden" name="filename" value="{{ r.filename }}">
+            <button class="button button--small button--danger" type="submit">取り下げ</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td class="empty" colspan="7">ログがありません</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

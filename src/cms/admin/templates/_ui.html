@@ -1,0 +1,18 @@
+{% set QUEUE_LABELS = {'queued': '待機中', 'scheduled': '予約済み', 'hidden': '取り下げ'} %}
+{% set LOG_LABELS = {'success': '成功', 'error': '失敗', 'skipped': 'スキップ'} %}
+
+{% macro queue_state(state) -%}
+<span class="status status--{{ state }}">{{ QUEUE_LABELS.get(state, state) }}</span>
+{%- endmacro %}
+
+{% macro queue_state_name(state) -%}{{ QUEUE_LABELS.get(state, state) }}{%- endmacro %}
+
+{% macro log_status(status) -%}
+<span class="status status--{{ status }}">{{ LOG_LABELS.get(status, status) }}</span>
+{%- endmacro %}
+
+{% macro log_status_name(status) -%}{{ LOG_LABELS.get(status, status) }}{%- endmacro %}
+
+{% macro filter_link(href, label, active) -%}
+<a class="chip" href="{{ href }}"{% if active %} aria-current="true"{% endif %}>{{ label }}</a>
+{%- endmacro %}

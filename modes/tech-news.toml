@@ -1,0 +1,13 @@
+# RSS から話題を取得するモード
+site_title = "テックニュースまとめ（サンプル）"
+base_url = "https://tech-news.example.com"
+type = "rss"
+prompt_file = "prompts/tech-news.txt"
+rss_url = "https://example.com/feed.xml"
+content_limit = 1500
+
+batch_count = 3
+schedule = "0 7 * * *"
+generate_retry_until = "11:50"
+publish_schedule = "0 8,12,18 * * *"
+publish_order = "fifo"

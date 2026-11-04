@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理画面 | ai-static-cms</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+{% if demo %}<div class="demo-banner">デモ環境：架空のサンプルデータを表示しています。操作はこの環境の中だけで完結します。</div>{% endif %}
+<header class="site-header">
+  <a class="brand" href="{{ url_for('index') }}">ai-static-cms</a>
+  <nav>
+    {% for endpoint, label in [('queue_list', '記事キュー'), ('post_logs', '実行ログ'), ('schedule', 'スケジュール')] %}
+    <a href="{{ url_for(endpoint) }}"{% if request.endpoint == endpoint %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav>
+</header>
+<main class="container">
+  {% if flash %}<p class="notice notice--ok" role="status">{{ flash }}</p>{% endif %}
+  {% if error %}<p class="notice notice--error" role="alert">{{ error }}</p>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{{ url_for('static', filename='admin.js') }}"></script>
+</body>
+</html>
